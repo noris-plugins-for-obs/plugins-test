@@ -1,0 +1,62 @@
+name: 'Test Plugins'
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+  schedule:
+    - cron: 17 0 * * *
+
+jobs:
+  example:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Prepare'
+        shell: bash
+        id: prep
+        run: |
+          : Prepare
+          set -e
+          if ${{ runner.os == 'Linux' }}; then
+            plugins_str="$(tr '\n' ' ' < ./plugins-ubuntu.txt)"
+          else
+            plugins_str="$(tr '\n' ' ' < ./plugins.txt)"
+          fi
+          echo "plugins=${plugins_str}" >> $GITHUB_OUTPUT
+
+      - name: 'Setup onsdriver'
+        uses: noris-plugins-for-obs/onsdriver@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          first-time-log: ./logs/
+          obs-plugins: |
+            ${{ steps.prep.outputs.plugins }}
+
+      - name: 'Install required libraries'
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: 'Test with onsdriver'
+        run: |
+          python -m unittest discover test-plugins/
+
+      - name: 'Upload logs of onsdriver'
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-${{ runner.os }}
+          path: |
+            logs/*

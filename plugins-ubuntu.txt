@@ -1,0 +1,3 @@
+loudness-dock-plugin-for-obs
+audio-video-sync-dock-plugin-for-obs
+vnc-plugin-for-obs
