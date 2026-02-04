@@ -8,6 +8,7 @@ import time
 import unittest
 import urllib.request
 from onsdriver import obstest, obsui
+import helpers
 
 
 def _download_cache_url(url):
@@ -148,7 +149,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         self._dock_stop()
         time.sleep(1)
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_monitor(self):
         cfg = self.obs.config.get_global_cfg('AudioVideoSyncDock')
         cfg['ListMonitor'] = 'true'
@@ -173,7 +174,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         time.sleep(1)
         self._dock_stop()
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_monitor1(self):
         cfg = self.obs.config.get_global_cfg('AudioVideoSyncDock')
         cfg['ListMonitor'] = 'true'
@@ -199,7 +200,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         time.sleep(1)
         self._dock_stop()
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_lag_and_early(self):
         self.obs.run()
         cl = self.obs.get_obsws()
@@ -229,7 +230,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
                         self.assertEqual(polarity, 'Audio lagged')
             first = False
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_p010(self):
         profile = self.obs.config.get_profile()
         profile['Video']['ColorFormat'] = 'P010'
@@ -250,7 +251,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         self.assertRegex(self._get_latency_text('videoIndexDisplay'), r'^[0-9]+ \([0-9]+% missed\)')
         self.assertRegex(self._get_latency_text('audioIndexDisplay'), r'^[0-9]+ \([0-9]+% missed\)')
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_video_formats(self):
         testcases = (
                 { 'ColorFormat': 'I010', },
@@ -304,7 +305,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         self.assertEqual(self._get_latency_text('videoIndexDisplay'), '-')
         self.assertEqual(self._get_latency_text('audioIndexDisplay'), '-')
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_broken_qr(self):
         import qrcode # pylint: disable=import-outside-toplevel
         img = qrcode.make('A=B,C=')
@@ -324,7 +325,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         self.assertEqual(self._get_latency_text('videoIndexDisplay'), '-')
         self.assertEqual(self._get_latency_text('audioIndexDisplay'), '-')
 
-    @unittest.skip('complicated')
+    @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_flip(self):
         self.obs.run()
         cl = self.obs.get_obsws()
@@ -335,7 +336,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
             'sceneItemId': item.scene_item_id,
             'sceneItemTransform': {
                 'scaleX': -1.0,
-                'positionX': 1280.0,
+                'positionX': 640.0,
             }
         }))
 

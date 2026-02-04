@@ -5,13 +5,7 @@ Test VNC Source
 import time
 import unittest
 from onsdriver import obstest, obsui
-
-
-def flatten_widgets(widget):
-    'Iterate self and all widgets'
-    yield widget
-    for w in widget['children']:
-        yield from flatten_widgets(w)
+import helpers
 
 
 class VNCTest(obstest.OBSTest):
@@ -20,9 +14,10 @@ class VNCTest(obstest.OBSTest):
     def setUp(self, config_name='saved-config', run=True):
         super().setUp(run=run, config_name=config_name)
 
-    @unittest.skip('covered by test_properties')
+    @helpers.severity(helpers.SEVERITY_FULL)
     def test_empty(self):
         cl = self.obs.get_obsws()
+        self.obs.waive_error(waiver_re=r'.*ConnectClientToTcpAddr6: connect')
 
         cl.send('CreateInput', {
             'inputName': 'vnc',
@@ -57,7 +52,7 @@ class VNCTest(obstest.OBSTest):
             {},
             {"className": "OBSPropertiesView"},
         ])
-        labels = [c['text'] for c in flatten_widgets(w) if c['className']=='QLabel']
+        labels = [c['text'] for c in helpers.flatten_widgets(w) if c['className']=='QLabel']
         print(labels)
         self.assertIn('Host name', labels)
         self.assertIn('Host port', labels)
