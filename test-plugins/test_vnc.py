@@ -38,6 +38,7 @@ class VNCTest(obstest.OBSTest):
     def test_properties(self):
         cl = self.obs.get_obsws()
         ui = obsui.OBSUI(cl)
+        self.obs.waive_error(waiver_re=r'.*ConnectClientToTcpAddr6: connect')
 
         cl.send('CreateInput', {
             'inputName': 'vnc',
