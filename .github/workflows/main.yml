@@ -42,6 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           first-time-log: ./logs/
+          graphics-size: 640x360
           obs-plugins: |
             ${{ steps.prep.outputs.plugins }}
 

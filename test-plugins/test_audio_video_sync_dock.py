@@ -117,7 +117,7 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
 
     def _create_sync_pattern_media(self, scene, name):
         filename = _download_cache_url(
-                'https://norihiro.github.io/obs-audio-video-sync-dock/sync-pattern-6000.mp4'
+                'https://norihiro.github.io/obs-audio-video-sync-dock/sync-pattern-3000-small.mp4'
         )
         self._create_media_input(scene=scene, name=name, filename=filename)
 
