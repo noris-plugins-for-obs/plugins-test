@@ -13,10 +13,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
+            arch: arm64
+          - os: macos-latest
+            arch: x86_64
 
     runs-on: ${{ matrix.os }}
 
@@ -43,6 +46,7 @@ jobs:
         with:
           first-time-log: ./logs/
           graphics-size: 640x360
+          obs-architecture: ${{ matrix.arch }}
           obs-plugins: |
             ${{ steps.prep.outputs.plugins }}
 
@@ -58,6 +62,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-${{ runner.os }}
+          name: test-${{ runner.os }}${{ matrix.arch }}
           path: |
             logs/*
