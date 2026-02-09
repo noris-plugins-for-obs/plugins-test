@@ -27,9 +27,16 @@ class PluginsTest(obstest.OBSTest):
         modules_wo_obs = [(n[4:] if n.startswith('obs-') else n) for n in modules]
 
         modules_exp = [
+                'async-audio-filter',
                 'asynchronous-audio-source',
-                'loudness-dock',
                 'audio-video-sync-dock',
+                'color-monitor',
+                'frame-interleave-filter',
+                'loudness-dock',
+                'main-view-source',
+                'mute-filter',
+                'text-pthread',
+                'vban',
                 'vnc',
         ]
 
