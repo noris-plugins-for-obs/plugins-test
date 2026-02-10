@@ -32,6 +32,7 @@ class PluginsTest(obstest.OBSTest):
                 'audio-video-sync-dock',
                 'color-monitor',
                 'frame-interleave-filter',
+                'h8819-source',
                 'loudness-dock',
                 'main-view-source',
                 'mute-filter',
