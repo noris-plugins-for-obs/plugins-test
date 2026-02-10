@@ -39,6 +39,18 @@ jobs:
           fi
           echo "plugins=${plugins_str}" >> $GITHUB_OUTPUT
 
+      - name: 'Install npcap on Windows'
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          : npcap
+          set -e
+          mkdir /tmp/npcap
+          cd /tmp/npcap
+          curl -O https://www.nagater.net/obs-studio/npcap-1.87.zip
+          unzip npcap-1.87.zip
+          mv *.dll 'C:/windows/system32/'
+
       - name: 'Setup onsdriver'
         uses: noris-plugins-for-obs/onsdriver@v0
         env:
