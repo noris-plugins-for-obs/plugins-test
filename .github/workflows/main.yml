@@ -75,6 +75,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-${{ runner.os }}${{ matrix.arch }}
+          name: test-${{ matrix.os }}${{ matrix.arch && format('-{0}', matrix.arch) || '' }}
           path: |
             logs/*
