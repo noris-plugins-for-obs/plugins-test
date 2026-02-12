@@ -7,6 +7,7 @@ import os.path
 import time
 import unittest
 import urllib.request
+import onsdriver.util
 from onsdriver import obstest, obsui
 import helpers
 
@@ -137,7 +138,10 @@ class AudioVideoSyncDockTest(obstest.OBSTest):
         self.assertEqual(self._get_latency_text('audioIndexDisplay'), '-')
 
         self._dock_start()
-        time.sleep(3)
+        time.sleep(1)
+        for _ in onsdriver.util.retry(timeout=10):
+            if self._get_latency_text() != '-':
+                break
 
         self.assertRegex(self._get_latency_text(), r'^-?[0-9.]* ms$')
         self.assertRegex(self._get_latency_text('latencyPolarity'), r'^Audio (early|lagged)$')
