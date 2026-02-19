@@ -11,6 +11,14 @@ def flatten_widgets(widget):
     for w in widget['children']:
         yield from flatten_widgets(w)
 
+def list_inputs(cl):
+    '''List input kinds
+
+    :param cl:  instance of ReqClient
+    '''
+    res = cl.send('GetInputKindList')
+    return res.input_kinds
+
 SEVERITY_COVERAGE = 10
 SEVERITY_FULL = 20
 _SEVERITIES_TO_NAME = {
