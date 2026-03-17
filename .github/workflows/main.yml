@@ -62,6 +62,7 @@ jobs:
           obs-architecture: ${{ matrix.arch }}
           obs-plugins: |
             ${{ steps.prep.outputs.plugins }}
+          include-prerelease: true
 
       - name: 'Install required libraries'
         run: |
