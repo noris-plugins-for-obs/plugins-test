@@ -39,6 +39,7 @@ class PluginsTest(obstest.OBSTest):
                 'asynchronous-audio-source',
                 'audio-video-sync-dock',
                 'color-monitor',
+                'command-source',
                 'frame-interleave-filter',
                 'h8819-source',
                 'loudness-dock',
@@ -67,6 +68,8 @@ class PluginsTest(obstest.OBSTest):
                 'net.nagater.obs-color-monitor.zebra_source',
                 'net.nagater.obs-color-monitor.falsecolor_source',
                 'net.nagater.obs-color-monitor.focuspeaking_source',
+                # command-source
+                'command_source',
                 # h8819-source
                 'net.nagater.obs-h8819-source.source',
                 # main-view-source

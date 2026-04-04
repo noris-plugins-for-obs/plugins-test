@@ -2,6 +2,7 @@ async-audio-filter-plugin-for-obs
 asynchronous-audio-source-for-obs
 audio-video-sync-dock-plugin-for-obs
 color-monitor-plugin-for-obs
+command-source-plugin-for-obs
 frame-interleave-filter-for-obs
 h8819-source-for-obs
 loudness-dock-plugin-for-obs
