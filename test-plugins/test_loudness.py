@@ -42,7 +42,7 @@ class LoudnessTestBasic(obstest.OBSTest):
             ]
         })
 
-    def _create_tone_input(self, *, scene, name, gain, freq_left=440, freq_right=440):
+    def _create_tone_input(self, *, scene, name, gain, freq_left=1000, freq_right=1000):
         cl = self.obs.get_obsws()
         cl.send('CreateInput', {
             'inputName': name,
@@ -75,7 +75,7 @@ class LoudnessTestBasic(obstest.OBSTest):
 
     def _get_ws_values(self, vendor='loudness-dock', name=None):
         cl = self.obs.get_obsws()
-        rd = {}
+        rd = {'verbose': True}
         if name:
             rd['name'] = name
         res = cl.send('CallVendorRequest', {
@@ -151,7 +151,7 @@ class LoudnessTestBasic(obstest.OBSTest):
             'method': 'click',
         })
 
-    def _config_close(self, button='OK'):
+    def _config_done(self, slot='accepted'):
         cl = self.obs.get_obsws()
         ui = obsui.OBSUI(cl)
         ui.request('widget-invoke', {
@@ -160,9 +160,8 @@ class LoudnessTestBasic(obstest.OBSTest):
                 {"className": "LoudnessDock"},
                 {"className": "ConfigDialog"},
                 {"className": "QDialogButtonBox",},
-                {"className": "QPushButton", "text": button},
             ],
-            'method': 'click',
+            'method': slot,
         })
 
 class LoudnessTest(LoudnessTestBasic):
@@ -190,8 +189,6 @@ class LoudnessTest(LoudnessTestBasic):
         gains = [
                 (-20.0, 5.0),
                 ( -9.9, 0.1),
-                #( -0.9, 0.1),
-                ( -9.9, 0.1),
                 (-19.0, 4.0),
                 (-12.0, 0.05),
                 ( -6.0, 0.05),
@@ -205,6 +202,9 @@ class LoudnessTest(LoudnessTestBasic):
 
         integrated_energy, integrated_time = 0.0, 0.0
         peak_db = gains[0][0]
+        duration_exp = 0.0
+
+        self._reset()
 
         for db, t in gains:
             cl.send('SetSourceFilterSettings', {
@@ -215,6 +215,7 @@ class LoudnessTest(LoudnessTestBasic):
                 },
             })
             time.sleep(t)
+            duration_exp += t
 
             e = math.pow(10.0, db / 10.0) * t
             print(f'db={db} t={t} e={e}')
@@ -226,8 +227,11 @@ class LoudnessTest(LoudnessTestBasic):
 
             ws_values = self._get_ws_values(vendor='obs-loudness-dock')
             ui_values = self._get_ui_values()
-            exp = db - 0.691
-            integrated_exp = integrated_db - 0.691
+            exp = db
+            integrated_exp = integrated_db
+
+            print(f't: ws={ws_values.duration} expected={duration_exp}')
+            self.assertAlmostEqual(ws_values.duration, duration_exp, delta=0.5)
 
             if t >= 0.3:
                 print(f'M: ws={ws_values.momentary} ui={ui_values.momentary} expected={exp}')
@@ -248,6 +252,8 @@ class LoudnessTest(LoudnessTestBasic):
 
                 self.assertAlmostEqual(ws_values.integrated, integrated_exp, delta=1)
                 self.assertAlmostEqual(ui_values.integrated, integrated_exp, delta=1)
+
+            duration_exp = ws_values.duration # Avoiding accumulated error
 
         ui.grab(
                 path=[
@@ -275,7 +281,7 @@ class LoudnessTest(LoudnessTestBasic):
             'method': 'click',
         })
 
-        self._config_close()
+        self._config_done()
 
         def _assert_tab(index, count):
             tab_widget = ui.widget_list(path=[
@@ -440,7 +446,7 @@ class LoudnessTest(LoudnessTestBasic):
         })
         _assert_tabs(2)
 
-        self._config_close()
+        self._config_done()
 
     @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_tabs_add_cancel(self):
@@ -472,7 +478,7 @@ class LoudnessTest(LoudnessTestBasic):
         })
         _assert_tabs(2)
 
-        self._config_close("Cancel")
+        self._config_done('rejected')
         _assert_tabs(1)
 
     @helpers.severity(helpers.SEVERITY_COVERAGE)
@@ -528,7 +534,7 @@ class LoudnessTest(LoudnessTestBasic):
         })
         _assert_colors(3)
 
-        self._config_close()
+        self._config_done()
 
     @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_with_pause(self):
@@ -562,12 +568,15 @@ class LoudnessTest(LoudnessTestBasic):
 
             ws_values = self._get_ws_values()
             ui_values = self._get_ui_values()
-            exp = db - 0.691
+            exp = db
 
+            print(f't: ws={ws_values.duration} expected={t}')
             print(f'momentary: ws={ws_values.momentary} ui={ui_values.momentary} expected={exp}')
             print(f'peak: ws={ws_values.peak} ui={ui_values.peak} expected={db}')
             print(f'short: ws={ws_values.short} ui={ui_values.short} expected={exp}')
             print(f'integrated: ws={ws_values.integrated} ui={ui_values.integrated} expected={exp}')
+
+            self.assertAlmostEqual(ws_values.duration, t, delta=0.5)
 
             self.assertAlmostEqual(ws_values.momentary, exp, delta=1)
             self.assertAlmostEqual(ui_values.momentary, exp, delta=1)
@@ -615,7 +624,7 @@ class LoudnessTest(LoudnessTestBasic):
                     {"className": "LoudnessDock"},
                     {"className": "ConfigDialog"},
                     {"className": "QDialogButtonBox",},
-                    {"className": "QPushButton", "text": "OK"},
+                    {"className": "QPushButton", "default": True},
                 ],
                 'method': 'click',
             })
@@ -662,7 +671,7 @@ class LoudnessTestComplicated(LoudnessTestBasic):
 
         def _g2l(*argv):
             e = sum(math.pow(10.0, db / 10.0) for db in argv)
-            return math.log10(e / len(argv)) * 10.0 - 0.691
+            return math.log10(e / len(argv)) * 10.0
 
         scene = 'Scene'
         name = 'tone'
@@ -670,6 +679,8 @@ class LoudnessTestComplicated(LoudnessTestBasic):
         time.sleep(3)
 
         cl.send('StartRecord')
+        values0a = self._get_ws_values(name='A')
+        values0b = self._get_ws_values(name='B')
         self._set_tone_gain(name=name, gain=-14.0)
         time.sleep(3)
         values1a = self._get_ws_values(name='A')
@@ -677,18 +688,22 @@ class LoudnessTestComplicated(LoudnessTestBasic):
         print(f'{values1a} {values1b}')
         self.assertAlmostEqual(values1a.integrated, _g2l(-23.0, -14.0), delta=0.5)
         self.assertAlmostEqual(values1b.integrated, _g2l(-14.0), delta=0.1)
+        self.assertAlmostEqual(values1b.duration, 3.0, delta=1.0)
 
         cl.send('PauseRecord')
         self._set_tone_gain(name=name, gain=-20.0)
         time.sleep(3)
         values_a = self._get_ws_values(name='A')
+        values_b = self._get_ws_values(name='B')
         self.assertAlmostEqual(values_a.integrated, _g2l(-23.0, -14.0, -20.0), delta=0.5)
+        self.assertAlmostEqual(values_b.duration, 3.0, delta=1.0)
 
         self._set_tone_gain(name=name, gain=-10.0)
         cl.send('ResumeRecord')
         time.sleep(3)
+        values_b = self._get_ws_values(name='B')
+        self.assertAlmostEqual(values_b.duration, 6.0, delta=1.0)
 
-        # TODO: Try Pause unpause recording
         cl.send('StopRecord')
         self._set_tone_gain(name=name, gain=-23.0)
         time.sleep(3)
@@ -699,6 +714,9 @@ class LoudnessTestComplicated(LoudnessTestBasic):
         exp_2b = _g2l(-14.0, -10.0)
         self.assertAlmostEqual(values2a.integrated, exp_2a, delta=0.5)
         self.assertAlmostEqual(values2b.integrated, exp_2b, delta=0.1)
+
+        self.assertAlmostEqual(values2a.duration - values0a.duration, 12.0, delta=1.0)
+        self.assertAlmostEqual(values2b.duration - values0b.duration, 6.0, delta=1.0)
 
     @helpers.severity(helpers.SEVERITY_COVERAGE)
     def test_greycolor(self):
