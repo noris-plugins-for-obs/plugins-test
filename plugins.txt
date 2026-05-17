@@ -11,3 +11,4 @@ https://github.com/norihiro/obs-mute-filter
 https://github.com/norihiro/obs-text-pthread
 https://github.com/norihiro/obs-vban
 https://github.com/norihiro/obs-vnc
+https://github.com/noris-plugins-for-obs/goniometer

@@ -41,6 +41,7 @@ class PluginsTest(obstest.OBSTest):
                 'color-monitor',
                 'command-source',
                 'frame-interleave-filter',
+                'goniometer',
                 'h8819-source',
                 'loudness-dock',
                 'main-view-source',
@@ -70,6 +71,8 @@ class PluginsTest(obstest.OBSTest):
                 'net.nagater.obs-color-monitor.focuspeaking_source',
                 # command-source
                 'command_source',
+                # goniometer
+                'net.nagater.obs.goniometer.source',
                 # h8819-source
                 'net.nagater.obs-h8819-source.source',
                 # main-view-source

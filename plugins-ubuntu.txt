@@ -4,6 +4,7 @@ audio-video-sync-dock-plugin-for-obs
 color-monitor-plugin-for-obs
 command-source-plugin-for-obs
 frame-interleave-filter-for-obs
+goniometer-plugin-for-obs
 h8819-source-for-obs
 loudness-dock-plugin-for-obs
 main-view-source-for-obs
